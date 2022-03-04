@@ -52,6 +52,7 @@ def get_an_image(N, ratios, distance_matrix, angle_matrix, bound_val, colors, ba
     
     Returns:
     img - one sample RGB image with the shape of (N, N, 3)
+    masks - a list of masks, the first one is for the face
     """
     # set the background of the image
     if background == 'zeros':
@@ -60,12 +61,16 @@ def get_an_image(N, ratios, distance_matrix, angle_matrix, bound_val, colors, ba
         img = np.random.random((N, N, 3))
         for c in range(3):
             img[:, :, c] = gaussian_filter(img[:, :, c], 1)
+            
+    masks = []
 
     # assign the color to the face
     mask_face = get_a_mask(N, ratios[0], distance_matrix, angle_matrix)
     img[mask_face, 0] = colors[0][0]
     img[mask_face, 1] = colors[0][1]
     img[mask_face, 2] = colors[0][2]
+    
+    masks.append(mask_face)
     
     # assign the colors to the eyes
     N_half = np.int((N - 1) / 2)
@@ -77,5 +82,12 @@ def get_an_image(N, ratios, distance_matrix, angle_matrix, bound_val, colors, ba
         img[mask_eye, 0] = colors[ii+1][0]
         img[mask_eye, 1] = colors[ii+1][1]
         img[mask_eye, 2] = colors[ii+1][2]
+        
+        masks.append(mask_eye)
 
-    return img
+    return img, masks
+
+
+
+
+
